@@ -118,11 +118,11 @@ class Pix2PixModel(BaseModel):
         self.real_B_enc = util.encode_ab_ind(self.real_B[:, :, ::4, ::4], self.opt)
 
     def encode(self):
-        conv1_2, conv2_2, conv3_3, conv6_3 = self.netG.encode(self.real_A, self.hint_B, self.mask_B)
-        return conv1_2, conv2_2, conv3_3, conv6_3
+        conv1_2, conv2_2, conv8_3 = self.netG.encode(self.real_A, self.hint_B, self.mask_B)
+        return conv1_2, conv2_2, conv8_3
 
-    def decode(self, conv1_2, conv2_2, conv3_3, conv6_3):
-        return self.netG.decode(conv1_2, conv2_2, conv3_3, conv6_3)
+    def decode(self, conv1_2, conv2_2, conv8_3):
+        return self.netG.decode(conv1_2, conv2_2, conv8_3)
 
     def forward(self):
         (self.fake_B_class, self.fake_B_reg) = self.netG(self.real_A, self.hint_B, self.mask_B)

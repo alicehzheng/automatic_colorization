@@ -356,12 +356,12 @@ class SIGGRAPHGenerator(nn.Module):
         conv4_3 = self.model4(conv3_3[:, :, ::2, ::2])
         conv5_3 = self.model5(conv4_3)
         conv6_3 = self.model6(conv5_3)
-        return conv1_2, conv2_2, conv3_3, conv6_3
-
-    def decode(self, conv1_2, conv2_2, conv3_3, conv6_3):
         conv7_3 = self.model7(conv6_3)
         conv8_up = self.model8up(conv7_3) + self.model3short8(conv3_3)
         conv8_3 = self.model8(conv8_up)
+        return conv1_2, conv2_2, conv8_3
+
+    def decode(self, conv1_2, conv2_2, conv8_3):
 
         if (self.classification):
             out_class = self.model_class(conv8_3)

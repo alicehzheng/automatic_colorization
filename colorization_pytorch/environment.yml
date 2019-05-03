@@ -1,4 +1,4 @@
-name: colorization-pytorch
+name: colorization_pytorch
 channels:
 - peterjc123
 - defaults

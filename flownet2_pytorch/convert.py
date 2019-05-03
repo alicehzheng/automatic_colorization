@@ -13,7 +13,7 @@ import numpy as np
 parser = argparse.ArgumentParser()
 parser.add_argument('caffe_model', help='input model in hdf5 or caffemodel format')
 parser.add_argument('prototxt_template',help='prototxt template')
-parser.add_argument('flownet2_pytorch', help='path to flownet2-pytorch')
+parser.add_argument('flownet2_pytorch', help='path to flownet2_pytorch')
 
 args = parser.parse_args()
 
