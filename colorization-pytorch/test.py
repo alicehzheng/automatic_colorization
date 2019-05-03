@@ -1,3 +1,4 @@
+
 import os
 from options.train_options import TrainOptions
 from models import create_model
@@ -13,6 +14,7 @@ from util import util
 from IPython import embed
 import numpy as np
 
+
 if __name__ == '__main__':
     sample_ps = [1., .125, .03125]
     to_visualize = ['gray', 'hint', 'hint_ab', 'fake_entr', 'real', 'fake_reg', 'real_ab', 'fake_ab_reg', ]
@@ -20,7 +22,7 @@ if __name__ == '__main__':
 
     opt = TrainOptions().parse()
     opt.load_model = True
-    opt.nThreads = 1  # test code only supports nThreads = 1
+    opt.nThreads = 1   # test code only supports nThreads = 1
     opt.batch_size = 1  # test code only supports batch_size = 1
     opt.display_id = -1  # no visdom display
     opt.phase = 'val'
@@ -30,7 +32,7 @@ if __name__ == '__main__':
 
     dataset = torchvision.datasets.ImageFolder(opt.dataroot,
                                                transform=transforms.Compose([
-                                                   transforms.Resize(512),
+                                                   transforms.Resize((opt.loadSize, opt.loadSize)),
                                                    transforms.ToTensor()]))
     dataset_loader = torch.utils.data.DataLoader(dataset, batch_size=opt.batch_size, shuffle=not opt.serial_batches)
 
