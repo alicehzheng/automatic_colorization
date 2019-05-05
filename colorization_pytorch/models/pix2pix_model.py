@@ -16,6 +16,7 @@ class Pix2PixModel(BaseModel):
         return parser
 
     def initialize(self, opt):
+        print(1)
         BaseModel.initialize(self, opt)
         self.isTrain = opt.isTrain
         self.half = opt.half
@@ -51,6 +52,7 @@ class Pix2PixModel(BaseModel):
         self.netG = networks.define_G(num_in, opt.output_nc, opt.ngf,
                                       opt.which_model_netG, opt.norm, not opt.no_dropout, opt.init_type, self.gpu_ids,
                                       use_tanh=True, classification=opt.classification)
+        print(self.netG.type)
 
         if self.isTrain:
             use_sigmoid = opt.no_lsgan
@@ -108,21 +110,21 @@ class Pix2PixModel(BaseModel):
                 input[key] = input[key].half()
 
         AtoB = self.opt.which_direction == 'AtoB'
-        self.real_A = input['A' if AtoB else 'B'].to(self.device)
-        self.real_B = input['B' if AtoB else 'A'].to(self.device)
+        self.real_A = input['A' if AtoB else 'B']#.to(self.device)
+        self.real_B = input['B' if AtoB else 'A']#.to(self.device)
         # self.image_paths = input['A_paths' if AtoB else 'B_paths']
-        self.hint_B = input['hint_B'].to(self.device)
-        self.mask_B = input['mask_B'].to(self.device)
+        self.hint_B = input['hint_B']#.to(self.device)
+        self.mask_B = input['mask_B']#.to(self.device)
         self.mask_B_nc = self.mask_B + self.opt.mask_cent
 
         self.real_B_enc = util.encode_ab_ind(self.real_B[:, :, ::4, ::4], self.opt)
 
     def encode(self):
-        conv1_2, conv2_2, conv8_3 = self.netG.encode(self.real_A, self.hint_B, self.mask_B)
+        conv1_2, conv2_2, conv8_3 = self.netG.module.encode(self.real_A, self.hint_B, self.mask_B)
         return conv1_2, conv2_2, conv8_3
 
     def decode(self, conv1_2, conv2_2, conv8_3):
-        return self.netG.decode(conv1_2, conv2_2, conv8_3)
+        return self.netG.module.decode(conv1_2, conv2_2, conv8_3)
 
     def forward(self):
         (self.fake_B_class, self.fake_B_reg) = self.netG(self.real_A, self.hint_B, self.mask_B)

@@ -7,7 +7,9 @@ def read_gen(file_name):
     ext = splitext(file_name)[-1]
     if ext == '.png' or ext == '.jpeg' or ext == '.ppm' or ext == '.jpg':
         im = imread(file_name)
-        if im.shape[2] > 3:
+        if len(im.shape) == 2:
+            return im.reshape(im.shape[0], im.shape[1], 1)
+        elif im.shape[2] > 3:
             return im[:,:,:3]
         else:
             return im

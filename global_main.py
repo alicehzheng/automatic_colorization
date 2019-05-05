@@ -1,16 +1,25 @@
 import itertools
-
+import os
+import sys
+sys.path.append("colorization_pytorch")
+sys.path.append("flownet2_pytorch")
 import torch
 import torch.nn as nn
 from colorization_pytorch.models import create_model
 from flownet2_pytorch.models import FlowNet2
 import torch.nn.functional as F
 import numpy as np
-
+from matplotlib import pyplot as plt
+from dataloader import *
+from torch.utils.data import DataLoader
+import tqdm
+from colorization_pytorch.options.train_options import TrainOptions
+from flownet2_pytorch.parser import initialize_args
+import torchvision.transforms as transforms
 
 class Mask(nn.Module):
     def __init__(self, in_channels):
-        super(Mask, self).__init__()
+        super(Mask).__init__()
         self.cnn = nn.Sequential(
             nn.Conv2d(in_channels=in_channels, out_channels=64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
@@ -26,7 +35,7 @@ class Mask(nn.Module):
 
 class VideoColorization(nn.Module):
     def __init__(self, opt, args, batchNorm=False, div_flow=20.):
-        super(VideoColorization, self).__init__()
+        super(VideoColorization).__init__()
         IDX_RANGE = 44
         self.color_model = create_model(opt)
         self.color_model.setup(opt)
@@ -53,3 +62,7 @@ class VideoColorization(nn.Module):
         M = self.mask(delta_feature_map)
         output_feature_map = (1 - M) * feature_map + M * predicted_feature_map
         fake_B_class, fake_B_reg = self.color_model.decode(conv1_2, conv2_2, output_feature_map)
+
+opt = TrainOptions().parse()
+args = initialize_args()
+debug = VideoColorization(opt, args)

@@ -189,13 +189,11 @@ def lab2rgb(lab_rs, opt):
         # embed()
     return out
 
-def get_colorization_data(data_raw, opt, ab_thresh=5., p=.125, num_points=None):
+def get_colorization_data(data_raw, opt, ab_thresh=5., p=1, num_points=None):
     data = {}
-
     data_lab = rgb2lab(data_raw[0], opt)
     data['A'] = data_lab[:,[0,],:,:]
     data['B'] = data_lab[:,1:,:,:]
-
     if(ab_thresh > 0): # mask out grayscale images
         thresh = 1.*ab_thresh/opt.ab_norm
         mask = torch.sum(torch.abs(torch.max(torch.max(data['B'],dim=3)[0],dim=2)[0]-torch.min(torch.min(data['B'],dim=3)[0],dim=2)[0]),dim=1) >= thresh
@@ -204,7 +202,6 @@ def get_colorization_data(data_raw, opt, ab_thresh=5., p=.125, num_points=None):
         # print('Removed %i points'%torch.sum(mask==0).numpy())
         if(torch.sum(mask)==0):
             return None
-
     return add_color_patches_rand_gt(data, opt, p=p, num_points=num_points)
 
 def add_color_patches_rand_gt(data,opt,p=.125,num_points=None,use_avg=True,samp='normal'):
@@ -219,7 +216,7 @@ def add_color_patches_rand_gt(data,opt,p=.125,num_points=None,use_avg=True,samp=
 
     data['hint_B'] = torch.zeros_like(data['B'])
     data['mask_B'] = torch.zeros_like(data['A'])
-
+    
     for nn in range(N):
         pp = 0
         cont_cond = True
@@ -253,6 +250,7 @@ def add_color_patches_rand_gt(data,opt,p=.125,num_points=None,use_avg=True,samp=
 
             # increment counter
             pp+=1
+            
 
     data['mask_B']-=opt.mask_cent
 

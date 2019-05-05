@@ -68,6 +68,7 @@ def init_net(net, init_type='xavier', gpu_ids=[]):
         assert (torch.cuda.is_available())
         net.to(gpu_ids[0])
         net = torch.nn.DataParallel(net, gpu_ids)
+        # net = net.cuda()
     init_weights(net, init_type)
     return net
 
@@ -76,7 +77,7 @@ def define_G(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropo
              gpu_ids=[], use_tanh=True, classification=True):
     netG = None
     norm_layer = get_norm_layer(norm_type=norm)
-
+    print(which_model_netG)
     if which_model_netG == 'resnet_9blocks':
         netG = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=9)
     elif which_model_netG == 'resnet_6blocks':
@@ -88,6 +89,7 @@ def define_G(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropo
     elif which_model_netG == 'siggraph':
         netG = SIGGRAPHGenerator(input_nc, output_nc, norm_layer=norm_layer, use_tanh=use_tanh,
                                  classification=classification)
+        
     else:
         raise NotImplementedError('Generator model name [%s] is not recognized' % which_model_netG)
     return init_net(netG, init_type, gpu_ids)
@@ -174,7 +176,7 @@ class GANLoss(nn.Module):
 
 
 class SIGGRAPHGenerator(nn.Module):
-    def __init__(self, input_nc, output_nc, norm_layer=nn.BatchNorm2d, use_tanh=True, classification=True):
+    def __init__(self, input_nc, output_nc, norm_layer=nn.BatchNorm2d, use_tanh=True, classification=False):
         super(SIGGRAPHGenerator, self).__init__()
         self.input_nc = input_nc
         self.output_nc = output_nc
