@@ -183,6 +183,7 @@ def lab2rgb(lab_rs, opt):
     l = lab_rs[:,[0],:,:]*opt.l_norm + opt.l_cent
     ab = lab_rs[:,1:,:,:]*opt.ab_norm
     lab = torch.cat((l,ab),dim=1)
+    print(lab.shape)
     out = xyz2rgb(lab2xyz(lab))
     # if(torch.sum(torch.isnan(out))>0):
         # print('lab2rgb')
